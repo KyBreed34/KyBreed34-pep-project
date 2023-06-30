@@ -3,6 +3,7 @@ package Service;
 import DAO.SocialMediaDAO;
 import Model.Account;
 import Model.Message;
+import java.util.ArrayList;
 
 public class SocialMediaService {
     SocialMediaDAO smDAO;
@@ -31,5 +32,9 @@ public class SocialMediaService {
         if(user==null || 0==message.message_text.length() || message.message_text.length()>=255)return null;
         Message result = smDAO.createMessage(message);
         return result;
+    }
+
+    public ArrayList<Message> getAllMessages(){
+        return smDAO.getAllMessages();
     }
 }

@@ -1,5 +1,6 @@
 package DAO;
 import java.sql.*;
+import java.util.ArrayList;
 
 import org.h2.command.Prepared;
 
@@ -93,6 +94,25 @@ public class SocialMediaDAO{
         }
         return null;
         
+    }
+
+    public ArrayList<Message> getAllMessages(){
+        Connection con = ConnectionUtil.getConnection();
+        try{
+            ArrayList<Message> allMessages = new ArrayList<Message>();
+            String sql = "SELECT * FROM message";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            ResultSet result = preparedStatement.executeQuery();
+            while(result.next()){
+                Message message = new Message(result.getInt("message_id"),result.getInt("posted_by"),result.getString("message_text"),result.getLong("time_posted_epoch"));
+                allMessages.add(message);
+            }
+            return allMessages;
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 
 }
