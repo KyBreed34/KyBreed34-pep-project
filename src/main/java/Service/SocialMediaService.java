@@ -16,4 +16,10 @@ public class SocialMediaService {
         Account result = smDAO.createUser(account);
         return result;    
     }
+
+    public Account login(Account account){
+        Account found = smDAO.getUser(account.getUsername());
+        if(found == null || !found.getPassword().equals(account.getPassword())) return null;
+        return found;
+    }
 }
