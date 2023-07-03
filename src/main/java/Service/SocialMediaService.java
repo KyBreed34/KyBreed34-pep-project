@@ -37,4 +37,22 @@ public class SocialMediaService {
     public ArrayList<Message> getAllMessages(){
         return smDAO.getAllMessages();
     }
+
+    public Message getMessageByID(int id){
+        return smDAO.getMessageByID(id);
+    }
+
+    public Message deleteMessage(int id){
+        return smDAO.deleteMessage(id);
+    }
+
+    public Message updateMessage(Message newMessage, int id){
+        //valid messageid, message is not blank, message under 255 chars
+        if( 0==newMessage.getMessage_text().length() || newMessage.getMessage_text().length()>=255)return null;
+        return smDAO.updateMessage(newMessage, id);
+    }
+
+    public ArrayList<Message> getMessageByUser(int id){
+        return smDAO.getMessageByUser(id);
+    }
 }

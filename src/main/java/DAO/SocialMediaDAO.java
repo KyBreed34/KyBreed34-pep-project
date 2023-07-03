@@ -115,4 +115,80 @@ public class SocialMediaDAO{
         return null;
     }
 
+    public Message getMessageByID(int id){
+        Connection con = ConnectionUtil.getConnection();
+        try{
+            String sql = "SELECT * FROM message WHERE message_id=?";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+            ResultSet result = preparedStatement.executeQuery();
+            while(result.next()){
+                Message message = new Message(result.getInt("message_id"),result.getInt("posted_by"),result.getString("message_text"),result.getLong("time_posted_epoch"));
+                return message;
+            }
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public Message deleteMessage(int id){
+        Connection con = ConnectionUtil.getConnection();
+        try{
+            //I cannot find a way to get a row in a delete update, thus I am attempting to get it before deleting so it can be returned after
+            Message target = getMessageByID(id);
+            if(target==null)return null;
+            
+            String sql = "DELETE FROM message WHERE message_id=?";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+            return target;
+                
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public Message updateMessage(Message newMessage, int id){
+        Connection con = ConnectionUtil.getConnection();
+        try{
+            String sql = "UPDATE message SET message_text = ? where message_id = ?";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setString(1,newMessage.getMessage_text());
+            preparedStatement.setInt(2,id);
+            int affectedRows = preparedStatement.executeUpdate();
+            if(affectedRows >0) return getMessageByID(id);
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+            
+
+        }
+        return null;
+    }
+
+    public ArrayList<Message> getMessageByUser(int id){
+        Connection con = ConnectionUtil.getConnection();
+        try{
+            String sql = "SELECT * FROM message WHERE posted_by=?";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setInt(1,id);
+            ResultSet result = preparedStatement.executeQuery();
+            ArrayList<Message> allMessages = new ArrayList<Message>();
+            while(result.next()){
+                Message message = new Message(result.getInt("message_id"),result.getInt("posted_by"),result.getString("message_text"),result.getLong("time_posted_epoch"));
+                allMessages.add(message);
+            }
+            return allMessages;
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
 }

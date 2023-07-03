@@ -41,19 +41,20 @@ public class SocialMediaController {
 
         //get all messages
         app.get("/messages",this::getAllMessagesHandler);
-/*
+
         //get message by id
-        app.get("/messages/{message_id}",);
+        app.get("/messages/{message_id}",this::getMessageByIDHandler);
 
         //delete message by id
-        app.delete("/messages/{message_id},");
+        app.delete("/messages/{message_id}",this::deleteMessageHandler);
+        
 
         //update message by id
-        app.patch("/messages/{message_id},");
+        app.patch("/messages/{message_id}",this::updateMessageHandler);
 
         //get messages by user
-        app.get("/accounts/{account_id}/messages",);
-        */
+        app.get("/accounts/{account_id}/messages",this::getMessageByUserHandler);
+        
         return app;
     }
 
@@ -103,6 +104,47 @@ public class SocialMediaController {
         ctx.json(om.writeValueAsString(messageList));
         ctx.status(200);
     }
+
+    private void getMessageByIDHandler(Context ctx) throws JsonProcessingException{
+        ObjectMapper om = new ObjectMapper();
+        Message message = smService.getMessageByID(Integer.parseInt(ctx.pathParam("message_id")));
+        if(message != null) ctx.json(om.writeValueAsString(message));
+        ctx.status(200);
+    }
+
+    private void deleteMessageHandler(Context ctx) throws JsonProcessingException{
+        ObjectMapper om = new ObjectMapper();
+        Message message = smService.deleteMessage(Integer.parseInt(ctx.pathParam("message_id")));
+        if(message != null) ctx.json(om.writeValueAsString(message));
+        ctx.status(200);
+    }
+
+    private void updateMessageHandler(Context ctx) throws JsonProcessingException{
+        ObjectMapper om = new ObjectMapper();
+        Message newMessage = om.readValue(ctx.body(), Message.class);
+        Message resultMessage = smService.updateMessage(newMessage, Integer.parseInt(ctx.pathParam("message_id")));
+        if(resultMessage != null){
+            ctx.json(om.writeValueAsString(resultMessage));
+            ctx.status(200);
+        }
+        else{
+            ctx.status(400);
+        }
+    }
+
+    private void getMessageByUserHandler(Context ctx) throws JsonProcessingException{
+        ObjectMapper om = new ObjectMapper();
+        int userID = Integer.parseInt(ctx.pathParam("account_id"));
+        ArrayList<Message> usersMessages = smService.getMessageByUser(userID);
+        
+        ctx.json(om.writeValueAsString(usersMessages));  
+        
+        ctx.status(200);
+
+        
+    }
+
+    
 
 
 }
